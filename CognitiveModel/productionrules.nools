@@ -1,0 +1,372 @@
+import("types.nools");
+
+rule Bootstrap {
+	when {
+		b: Boolean b === true from true;
+	}
+	then {
+		assert(new TPA("problemstatement", "UpdateTextArea", probtxt));
+		
+		let estimate = assert(new InterfaceElement("estimate", null));
+		let prob_types = assert(new InterfaceElement("prob_types", null));
+		let r_star = assert(new InterfaceElement("r_star_calc", ""));
+		let t_star = assert(new InterfaceElement("t_star_calc", ""));
+
+		//Equation 1
+		var eq_1_names = ["A_eq", "P_eq", "r_star_eq", "t_star_eq"];
+		var eq_1_values = [A, P, r/n, t*n];
+		assert(new InterfaceRow("eq_1", eq_1_names, eq_1_values));
+
+		for (var i = 0; i < 4; i++) {
+			assert(new InterfaceElement(eq_1_names[i], null));
+		}
+		
+		//Equation 2
+		var eq_2_names = ["P_eq2", "r_star_added", "t_star_eq2"];
+		var eq_2_values = [P, r/n + 1, t*n];
+		assert(new InterfaceRow("eq_2", eq_2_names, eq_2_values));
+
+		for (var i = 0; i < 3; i++) {
+			assert(new InterfaceElement(eq_2_names[i], null));
+		}
+
+		//Equation 3
+		var eq_3_names = ["P_eq3", "coef_eq3"];
+		var eq_3_values = [P, (r/n + 1)**(t*n)];
+		assert(new InterfaceRow("eq_3", eq_3_names, eq_3_values));
+
+		for (var i = 0; i < 2; i++) {
+			assert(new InterfaceElement(eq_3_names[i], null));
+		}
+
+		//Equation 4
+		var eq_4_names = ["final_label", "final_answer"];
+		if (direction == "forward") {
+			var eq_4_values = [A, P*((r/n + 1)**(t*n))];
+		}
+		else {
+			var eq_4_values = [P, A/((r/n + 1)**(t*n))];
+		}
+		
+		assert(new InterfaceRow("eq_4", eq_4_names, eq_4_values));
+
+		for (var i = 0; i < 2; i++) {
+			assert(new InterfaceElement(eq_4_names[i], null));
+		}
+
+		assert(new Problem(probname, A, P, t, r, n, direction));
+	
+		setProblemAttribute("use_backtracking", true);
+		halt();
+	}
+}
+
+rule EnterEstimate {
+	when {
+		p: Problem;
+		ie: InterfaceElement ie.name == "estimate" && !ie.value {name: sel};
+		sai: StudentValues sai.selection == sel || sai.selection == "hint" {input: i};
+	}
+	then {
+		assert(new Hint("Enter your best guess for the answer, any number greater than 0 will be considered a valid guess."));
+		let inputNum = parseInt(i, 10);
+
+		var predictedSAI = {selection: sel, action: "UpdateTextField", input: i};
+		if (checkSAI(predictedSAI, 
+				
+				function() { 
+					return(inputNum > 0); 
+				} 
+
+			)) {
+			modify(ie, "value", inputNum);
+			halt()
+		}
+		else {
+			backtrack();
+		}
+	}
+}
+
+rule ProbTypes {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		ie: InterfaceElement ie.name == "prob_types" && !ie.value;
+	}
+	then {
+		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: direction})) {
+			modify(ie, "value", direction);
+			halt();
+		}
+	}
+}
+
+
+rule R_Star {
+	when {
+		prob : Problem {n:n, r:r};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		r_star: InterfaceElement r_star.name == "r_star_calc" && !r_star.value;
+	}
+	then {
+		var r_star_ans = r/n;
+		if (!Number.isInteger(r_star_ans)) { 
+			r_star_ans = r_star_ans.toFixed(2); 
+		}
+		if (checkSAI({selection: r_star.name, action: "UpdateTextField", input: r_star_ans},
+					  function(stuSAI, sysSAI) {
+						var ret = (( stuSAI.selection ===  sysSAI.selection  )
+								&& ( stuSAI.action ===  sysSAI.action )
+								&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+							 			sysSAI.input));
+						return ret; })) {
+			modify(r_star, "value", r_star_ans);
+			halt();
+		}
+		else {
+			backtrack();
+		}
+			
+	}
+
+}
+
+rule T_Star {
+	when {
+		prob : Problem {n:n, t:t};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		t_star: InterfaceElement t_star.name == "t_star_calc" && !t_star.value;
+	}
+	then {
+		var t_star_ans = t*n;
+		if (!Number.isInteger(t_star_ans)) { 
+			t_star_ans = t_star_ans.toFixed(2); 
+		}
+		if (checkSAI({selection: t_star.name, action: "UpdateTextField", input: t_star_ans},
+					  function(stuSAI, sysSAI) {
+						var ret = (( stuSAI.selection ===  sysSAI.selection  )
+								&& ( stuSAI.action ===  sysSAI.action )
+								&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+							 			sysSAI.input));
+						return ret; })) {
+			modify(t_star, "value", t_star_ans);
+			halt();
+		}
+		else {
+			backtrack();
+		}
+			
+	}
+
+}
+
+rule Equation1 {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow: InterfaceRow ierow.name == "eq_1" {ie_names: ie_names, ie_values: ie_values};
+		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+	}
+	then {
+		var index = ie_names.indexOf(ie.name);
+		var ans = ie_values[index];
+		console.log(index);
+		console.log(ans);
+		if ((direction == "forward" && index == 0) || (direction == "backward" && index == 1) ) {
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+		}
+		else {
+			if (!Number.isInteger(ans)) { 
+				ans = ans.toFixed(2); 
+			}
+
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans},
+						function(stuSAI, sysSAI) {
+							var ret = (( stuSAI.selection ===  sysSAI.selection  )
+									&& ( stuSAI.action ===  sysSAI.action )
+									&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+											sysSAI.input));
+							return ret; })) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+
+		}
+		
+			
+	}
+
+}
+
+rule Equation2 {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow: InterfaceRow ierow.name == "eq_2" {ie_names: ie_names, ie_values: ie_values};
+		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+	}
+	then {
+		var index = ie_names.indexOf(ie.name);
+		var ans = ie_values[index];
+		console.log(index);
+		console.log(ans);
+		if ((direction == "backward" && index == 0) ) {
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+		}
+		else {
+			if (!Number.isInteger(ans)) { 
+				ans = ans.toFixed(2); 
+			}
+
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans},
+						function(stuSAI, sysSAI) {
+							var ret = (( stuSAI.selection ===  sysSAI.selection  )
+									&& ( stuSAI.action ===  sysSAI.action )
+									&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+											sysSAI.input));
+							return ret; })) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+
+		}
+		
+			
+	}
+
+}
+
+rule Equation3 {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow2: InterfaceRow ierow2.name == "eq_2" {ie_names: ie2_names};
+		not(
+			ie2: InterfaceElement ie2_names.includes(ie2.name) && !ie2.value
+		);
+		ierow: InterfaceRow ierow.name == "eq_3" {ie_names: ie_names, ie_values: ie_values};
+		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+	}
+	then {
+		var index = ie_names.indexOf(ie.name);
+		var ans = ie_values[index];
+		console.log(index);
+		console.log(ans);
+		if ((direction == "backward" && index == 0) ) {
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+		}
+		else {
+			if (!Number.isInteger(ans)) { 
+				ans = ans.toFixed(2); 
+			}
+
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans},
+						function(stuSAI, sysSAI) {
+							var ret = (( stuSAI.selection ===  sysSAI.selection  )
+									&& ( stuSAI.action ===  sysSAI.action )
+									&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+											sysSAI.input));
+							return ret; })) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+
+		}
+		
+			
+	}
+
+}
+
+rule Equation4 {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow: InterfaceRow ierow.name == "eq_4" {ie_names: ie_names, ie_values: ie_values};
+		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+	}
+	then {
+		var index = ie_names.indexOf(ie.name);
+		var ans = ie_values[index];
+		console.log(index);
+		console.log(ans);
+		if ((index == 0) ) {
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+		}
+		else {
+			if (!Number.isInteger(ans)) { 
+				ans = ans.toFixed(2); 
+			}
+
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans},
+						function(stuSAI, sysSAI) {
+							var ret = (( stuSAI.selection ===  sysSAI.selection  )
+									&& ( stuSAI.action ===  sysSAI.action )
+									&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+											sysSAI.input));
+							return ret; })) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+
+		}
+		
+			
+	}
+
+}

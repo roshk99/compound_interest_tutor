@@ -1,0 +1,10 @@
+import("productionrules.nools");
+
+global probname = "problem 2";
+global probtxt = "Harry is investing $5000 at a stated annual interest rate of 12% per year, compounded quarterly, for five years. What is his wealth at the end of five years? Solve to the nearest dollar.";
+global P = 5000;
+global A = "A";
+global r = 0.12;
+global t = 5;
+global n = 4;
+global direction = "forward";
