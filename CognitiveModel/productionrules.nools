@@ -11,6 +11,8 @@ rule Bootstrap {
 		let prob_types = assert(new InterfaceElement("prob_types", null));
 		let r_star = assert(new InterfaceElement("r_star_calc", ""));
 		let t_star = assert(new InterfaceElement("t_star_calc", ""));
+		let compare = assert(new InterfaceElement("compare", null));
+		let power = assert(new InterfaceElement("power", null));
 
 		//Equation 1
 		var eq_1_names = ["A_eq", "P_eq", "r_star_eq", "t_star_eq"];
@@ -101,7 +103,6 @@ rule ProbTypes {
 		}
 	}
 }
-
 
 rule R_Star {
 	when {
@@ -369,4 +370,118 @@ rule Equation4 {
 			
 	}
 
+}
+
+rule Compare {
+	when {
+		prob : Problem;
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value {value: estimate};
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow4: InterfaceRow ierow4.name == "eq_4" {ie_names: ie4_names};
+		not(
+			ie4: InterfaceElement ie4_names.includes(ie4.name) && !ie4.value
+		);
+		ie_ans: InterfaceElement ie_ans.name == "final_answer" {value: final_answer};
+		ie: InterfaceElement ie.name == "compare" && !ie.value;
+	}
+	then {
+		var final_answer = parseFloat(final_answer);
+		var compare;
+
+		if (estimate == final_answer) {
+			compare = "NA";
+		}
+		else if (estimate > final_answer) {
+			compare = "higher";
+		}
+		else {
+			compare = "lower";
+		}
+		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: compare})) {
+			modify(ie, "value", compare);
+			halt();
+		}
+		
+			
+	}
+
+}
+
+rule Power {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value {value: estimate};
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow4: InterfaceRow ierow4.name == "eq_4" {ie_names: ie4_names};
+		not(
+			ie4: InterfaceElement ie4_names.includes(ie4.name) && !ie4.value
+		);
+		ie_ans: InterfaceElement ie_ans.name == "final_answer" {value: final_answer};
+		compare_ie: InterfaceElement compare_ie.name == "compare" && compare_ie.value;
+		ie: InterfaceElement ie.name == "power" && !ie.value;
+	}
+	then {
+		var final_answer = parseFloat(final_answer);
+		var power;
+
+		if (estimate == final_answer) {
+			power = "NA";
+		}
+		else if (estimate < final_answer) {
+			if (direction == "forward") {
+				power = "underestimated";
+			}
+			else {
+				power = "overestimated";
+			}
+		}
+		else {
+			if (direction == "forward") {
+				power = "overestimated";
+			}
+			else {
+				power = "underestimated";
+			}
+		}
+		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: power})) {
+			modify(ie, "value", power);
+			halt();
+		}
+			
+	}
+
+}
+
+rule Done {
+	when {
+		prob : Problem;
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow4: InterfaceRow ierow4.name == "eq_4" {ie_names: ie4_names};
+		not(
+			ie4: InterfaceElement ie4_names.includes(ie4.name) && !ie4.value
+		);
+		compare_ie: InterfaceElement compare_ie.name == "compare" && compare_ie.value;
+		power_ie: InterfaceElement power_ie.name == "power" && power_ie.value;
+	}
+	then {
+		if(checkSAI({selection: "done", action: "ButtonPressed", input: "don't_care"})) {
+			halt();                 
+		}
+		else {
+			backtrack();
+		}
+	}
 }

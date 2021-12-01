@@ -1,0 +1,11 @@
+import("productionrules.nools");
+import("skills.nools");
+
+global probname = "problem 3";
+global probtxt = "Vincent and Jonathan are investing in the stock market, specifically in a mutual fund that has an estimated yearly return of 1%, compounded annually. How much money should they invest now so they can have $300,000 when they start their business in 5 years? They want to start a business that will generate yearly profits of $10,000.";
+global P = 300000;
+global A = "A";
+global r = 0.01;
+global t = 5;
+global n = 1;
+global direction = "forward";

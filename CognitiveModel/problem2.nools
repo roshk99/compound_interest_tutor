@@ -1,10 +1,11 @@
 import("productionrules.nools");
+import("skills.nools");
 
 global probname = "problem 2";
-global probtxt = "Harry is investing $5000 at a stated annual interest rate of 12% per year, compounded quarterly, for five years. What is his wealth at the end of five years? Solve to the nearest dollar.";
-global P = 5000;
-global A = "A";
-global r = 0.12;
-global t = 5;
-global n = 4;
-global direction = "forward";
+global probtxt = "Amy is opening a new savings account. In 15 years, she would like to have $10,000. Her account has a 2% interest rate and is compounded annually. How much should her opening deposit be? ";
+global P = "P";
+global A = 10000;
+global r = 0.02;
+global t = 15;
+global n = 1;
+global direction = "backwards";

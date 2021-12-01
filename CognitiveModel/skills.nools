@@ -1,0 +1,74 @@
+//  these counts ignore that each  problem has its own count ... 
+
+global skill_definitions = [
+	{
+		ruleName: "EnterEstimate",
+		skillName: "Estimation",
+		category: "6.28",
+		opportunities: 1,
+		label: "Solution Estimation"
+	},
+    {
+		ruleName: "ProbTypes",
+		skillName: "ProblemAnalysis",
+		category: "6.28",
+		opportunities: 1,
+		label: "Problem Analysis"
+	},
+	{
+		ruleName: "R_Star",
+		skillName: "IntermediateCalculations",
+		category: "6.28",
+		opportunities: 2,
+		label: "Intermediate Calculations"
+	},
+	{
+		ruleName: "T_Star",
+		skillName: "IntermediateCalculations",
+		category: "6.28",
+		opportunities: 2,
+		label: "Intermediate Calculations"
+	},
+	{
+		ruleName: "Equation1",
+		skillName: "c",
+		category: "6.28",
+		opportunities: 11,
+		label: "Substitution"
+	},
+	{
+		ruleName: "Equation2",
+		skillName: "Simplification",
+		category: "6.28",
+		opportunities: 11,
+		label: "Simplification"
+	},
+    {
+		ruleName: "Equation3",
+		skillName: "Simplification",
+		category: "6.28",
+		opportunities: 11,
+		label: "Simplification"
+	},
+	{
+		ruleName: "Equation4",
+		skillName: "Simplification",
+		category: "6.28",
+		opportunities: 11,
+		label: "Simplification"
+	},
+	{
+		ruleName: "Compare",
+		skillName: "Reflection",
+		category: "6.28",
+		opportunities: 2,
+		label: "Reflection"
+	},
+    {
+		ruleName: "Power",
+		skillName: "Reflection",
+		category: "6.28",
+		opportunities: 2,
+		label: "Reflection"
+	}
+];
