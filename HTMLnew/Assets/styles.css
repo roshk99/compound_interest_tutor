@@ -1,0 +1,60 @@
+:root {
+    --dark-text: rgba(2, 48, 71, 1);
+    --orange: rgba(251, 133, 0, 1);
+    --blue: rgba(142, 202, 230, 1);
+    --bg: rgba(206, 237, 252, 1);
+}
+
+body {
+    background-color: var(--bg) !important;
+    padding-top: 80px;
+}
+  
+#right_bar {
+    margin-top: -30px;
+    background-color: var(--bg);
+    position: fixed;
+    right: 0;
+    height: 100vh;
+}
+
+#problemstatement {
+    width: 20vw;
+    height: 200px;
+    overflow: auto;
+}
+
+#solution_container{
+    background-color: var(--bg);
+    padding: 40px;
+}
+
+#solution {
+    background-color: white;
+    padding: 40px;
+}
+
+.CTATTextInput {
+    height: 60px; 
+    width: 60px;
+
+}
+
+.left_paren {
+    margin-left: -20px;
+}
+
+.exponent {
+    height: 40px;
+    width: 40px;
+    margin-left: -75px;
+    margin-top: -10px;
+}
+
+.P, .r_star {
+    margin-left: -20px;
+}
+
+.center {
+    margin-left: -30px;
+}
