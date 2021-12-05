@@ -8,6 +8,7 @@
 body {
     background-color: var(--bg) !important;
     padding-top: 80px;
+    color: var(--dark-text) !important;
 }
   
 #right_bar {
@@ -57,4 +58,8 @@ body {
 
 .center {
     margin-left: -30px;
+}
+
+.highlight {
+    color: var(--orange);
 }
