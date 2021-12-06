@@ -91,19 +91,6 @@ rule EnterEstimate {
 	}
 }
 
-// rule estimate_buggy_num {
-// 	when {
-// 		p: Problem;
-// 		ie: InterfaceElement ie.name == "estimate" && !ie.value {name: sel};
-// 		sai: StudentValues sai.selection == sel {input: i};
-// 	}
-// 	then {
-// 		if(checkSAI({selection: sel, action: "UpdateTextField", input: i}))
-
-// 	}
-
-// }
-
 rule ProbTypes {
 	when {
 		prob : Problem {direction: direction};
