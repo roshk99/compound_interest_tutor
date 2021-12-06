@@ -97,6 +97,8 @@ rule ProbTypes {
 		ie: InterfaceElement ie.name == "prob_types" && !ie.value;
 	}
 	then {
+		assert(new Hint("What value are you given, the present amount or future amount?."));
+		assert(new Hint("Enter "+direction+"in the dropdown."));
 		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: direction})) {
 			modify(ie, "value", direction);
 			halt();
@@ -113,6 +115,9 @@ rule R_Star {
 	}
 	then {
 		var r_star_ans = r/n;
+		assert(new Hint("The effective interest rate is the annual interest rate per compounding periods per year."));
+		assert(new Hint("Divide the annual interest rate ("+r+") by the compounding periods per year ("+n+")."));
+		assert(new Hint("Enter "+r_star_ans+"in the dropdown."));
 		if (!Number.isInteger(r_star_ans)) { 
 			r_star_ans = r_star_ans.toFixed(2); 
 		}
@@ -134,6 +139,31 @@ rule R_Star {
 
 }
 
+rule R_Star_Buggy {
+	when {
+		prob : Problem {n:n, r:r};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		r_star: InterfaceElement r_star.name == "r_star_calc" && !r_star.value;
+	}
+	then {
+		var r_star_ans = r;
+		if (!Number.isInteger(r_star_ans)) { 
+			r_star_ans = r_star_ans.toFixed(2); 
+		}
+		if (checkSAI({selection: r_star.name, action: "UpdateTextField", input: r_star_ans},
+					  function(stuSAI, sysSAI) {
+						var ret = (( stuSAI.selection ===  sysSAI.selection  )
+								&& ( stuSAI.action ===  sysSAI.action )
+								&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+							 			sysSAI.input));
+						return ret; }, true)) {
+      		setSuccessOrBugMsg("Make sure you calculate the effective interest rate rather than the annual interest rate.");
+      		backtrack();
+    	}			
+	}
+}
+
 rule T_Star {
 	when {
 		prob : Problem {n:n, t:t};
@@ -143,6 +173,9 @@ rule T_Star {
 	}
 	then {
 		var t_star_ans = t*n;
+		assert(new Hint("The total compounding periods is the number of years multiplied by the compounding periods per year."));
+		assert(new Hint("Multiply the number of years ("+n+") by the compounding periods per year ("+n+")."));
+		assert(new Hint("Enter "+t_star_ans+"in the dropdown."));
 		if (!Number.isInteger(t_star_ans)) { 
 			t_star_ans = t_star_ans.toFixed(2); 
 		}
@@ -164,6 +197,34 @@ rule T_Star {
 
 }
 
+rule T_Star_Buggy {
+	when {
+		prob : Problem {n:n, t:t};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		t_star: InterfaceElement t_star.name == "t_star_calc" && !t_star.value;
+	}
+	then {
+		var t_star_ans = t;
+		if (!Number.isInteger(t_star_ans)) { 
+			t_star_ans = t_star_ans.toFixed(2); 
+		}
+		if (checkSAI({selection: t_star.name, action: "UpdateTextField", input: t_star_ans},
+					  function(stuSAI, sysSAI) {
+						var ret = (( stuSAI.selection ===  sysSAI.selection  )
+								&& ( stuSAI.action ===  sysSAI.action )
+								&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+							 			sysSAI.input));
+						return ret; }, true)) {
+			setSuccessOrBugMsg("Make sure you calculate the total compounding periods rather than the number of years.");
+      		backtrack();
+		}
+			
+	}
+
+}
+
+
 rule Equation1 {
 	when {
 		prob : Problem {direction: direction};
@@ -175,8 +236,7 @@ rule Equation1 {
 	then {
 		var index = ie_names.indexOf(ie.name);
 		var ans = ie_values[index];
-		console.log(index);
-		console.log(ans);
+
 		if ((direction == "forward" && index == 0) || (direction == "backward" && index == 1) ) {
 			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
 				modify(ie, "value", ans);
@@ -391,7 +451,7 @@ rule Compare {
 	then {
 		var final_answer = parseFloat(final_answer);
 		var compare;
-
+		
 		if (estimate == final_answer) {
 			compare = "NA";
 		}
@@ -401,6 +461,8 @@ rule Compare {
 		else {
 			compare = "lower";
 		}
+		assert(new Hint("Enter "+compare+"in the dropdown."));
+
 		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: compare})) {
 			modify(ie, "value", compare);
 			halt();
@@ -434,23 +496,31 @@ rule Power {
 
 		if (estimate == final_answer) {
 			power = "NA";
+			assert(new Hint("Good job, your estimate was accurate!"));
 		}
 		else if (estimate < final_answer) {
 			if (direction == "forward") {
 				power = "underestimated";
+				assert(new Hint("You solved for the final amount and your estimate was lower than the true answer. Does that mean you thought the initial amount should have grown more or less?"));
 			}
 			else {
 				power = "overestimated";
+				assert(new Hint("You solved for the initial amount and your estimate was lower than the true answer. Does that mean you under or overestimated the compounding of the initial amount?"));
 			}
 		}
 		else {
 			if (direction == "forward") {
 				power = "overestimated";
+				assert(new Hint("You solved for the final amount and your estimate was higher than the true answer. Does that mean you thought the initial amount should have grown more or less?"));
 			}
 			else {
 				power = "underestimated";
+				assert(new Hint("You solved for the initial amount and your estimate was higher than the true answer. Does that mean you under or overestimated the compounding of the initial amount?"));
 			}
 		}
+		
+		assert(new Hint("Enter "+power+"in the dropdown."));
+
 		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: power})) {
 			modify(ie, "value", power);
 			halt();

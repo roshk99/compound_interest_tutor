@@ -10,7 +10,7 @@ body {
     padding-top: 80px;
     color: var(--dark-text) !important;
 }
-  
+
 #right_bar {
     margin-top: -30px;
     background-color: var(--bg);
@@ -20,12 +20,13 @@ body {
 }
 
 #problemstatement {
-    width: 20vw;
+    width: 90%;
     height: 200px;
     overflow: auto;
+    /* margin-right: 5%; */
 }
 
-#solution_container{
+#solution_container {
     background-color: var(--bg);
     padding: 40px;
 }
@@ -36,9 +37,13 @@ body {
 }
 
 .CTATTextInput {
-    height: 60px; 
+    height: 60px;
     width: 60px;
+}
 
+.CTATHintWindow {
+    width: 90%;
+    margin-right: 5%;
 }
 
 .left_paren {
@@ -52,7 +57,8 @@ body {
     margin-top: -10px;
 }
 
-.P, .r_star {
+.P,
+.r_star {
     margin-left: -20px;
 }
 

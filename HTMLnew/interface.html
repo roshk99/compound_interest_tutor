@@ -1,194 +1,209 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="https://cdn.ctat.cs.cmu.edu/releases/current/jquery.min.js"></script>
-        <script src="https://cdn.ctat.cs.cmu.edu/releases/current/ctat.min.js"></script>
-        <script src="https://cdn.ctat.cs.cmu.edu/releases/current/ctatloader.js"></script>
-        <script src="https://cdn.ctat.cs.cmu.edu/releases/current/nools.js"></script>
-        <!-- Style sheet -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed&family=Barlow:wght@400;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="https://cdn.ctat.cs.cmu.edu/releases/current/CTAT.css">
-        <link rel="stylesheet" href="Assets/styles.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    </head>
-    <body>
-        <div class="row">
-            <div id = "right_bar" class = "col-3">
-                <div class="CTATTextArea" id="problemstatement"></div>
-                <div id = "formula">
-                    <h1>A = P (1 + r*)<sup>t*</sup></h1>
-                    A - future amount<br>
-                    P - present amount<br>
-                    r* - effective interest rate<br>
-                    t* - total compounding periods
-                    <!-- Hint panel -->
-                    <div id="hints">
-                        <h2>Hints</h2>
 
-                        <div id="hint-window" class="CTATHintWindow" ></div>
-                        <div id="hint-button" class="CTATHintButton" ></div>
-                    </div>
-                </div>
-            </div>
-            <div id = "solution_container" class = "col-9">
-                <div id = "solution">
-                    <h2>Understanding the Problem</h2>
+<head>
+    <script src="https://cdn.ctat.cs.cmu.edu/releases/current/jquery.min.js"></script>
+    <script src="https://cdn.ctat.cs.cmu.edu/releases/current/ctat.min.js"></script>
+    <script src="https://cdn.ctat.cs.cmu.edu/releases/current/ctatloader.js"></script>
+    <script src="https://cdn.ctat.cs.cmu.edu/releases/current/nools.js"></script>
+    <!-- Style sheet -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed&family=Barlow:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.ctat.cs.cmu.edu/releases/current/CTAT.css">
+    <link rel="stylesheet" href="Assets/styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
 
-                    <div id = "est_instructions" class = "instructions">
-                        Estimate what the final answer will be.
-                        Do not use any calculations for this step. 
-                        Your estimate will be accepted as correct as long at is 
-                        given in a numeric form. 
-                        
+<body>
+    <div class="row">
+        <div id="right_bar" class="col-4">
+            <div class="CTATTextArea" id="problemstatement"></div>
+            <br><br>
+            <div id="formula">
+                <h1>A = P (1 + r*)<sup>t*</sup></h1>
+                A - future amount<br> P - present amount<br> r* - effective interest rate<br> t* - total compounding periods
+                <!-- Hint panel -->
+                <br><br>
+                <div id="hints">
+                    <h2>Hints</h2>
 
-                    </div>
-                    <div id = "estimate" class="CTATTextInput"></div>
-                    <div class = "dropdown_question">What type of value are you calculating?</div>
-                    <div id = "prob_types" class = "CTATComboBox" data-ctat-labels="---select ---,forward,backwards"></div>
-                    
-                
-                    <div id = "star_instructions" class = "instructions">
-                        Entering r* and t* here is an intermediate step, 
-                        and is optional. When entering r* and t*, your 
-                        answer should be correct to two decimal places. 
-
-                    </div>
-                    <br>
-                    <div id = "r_star_opt" class = "star_opt row">
-                        <div class = "col-2"><h1 class = "highlight">r*= </h1></div>
-                        <div class = "col-2">
-                            <div id = "r_star_calc" class = "CTATTextInput star_opt_input"></div>
-
-                        </div>
-                    </div>
-                    <div id = "t_star_opt" class = "star_opt row">
-                        <div class = "col-2"><h1 class = "highlight">t*= </h1></div>
-                        <div class = "col-2">
-                            <div id = "t_star_calc" class = "CTATTextInput star_opt_input"></div>
-
-                        </div>
-                    </div>
-                    <br><br>
-                    <div class = "instructions">
-                        equation instructions
-                    </div>
-                    <br><br>
-                    <div class = "row">
-                        <div class = "col-1">
-                            <div id = "A_eq" class = "CTATTextInput"></div>
-                        </div>
-                        <div class = "col-1">
-                            <h1 class = "highlight">=</h1>
-                        </div>
-                        <div class = "col-1">
-                            <div id = "P_eq" class = "CTATTextInput P"></div>
-                        </div>
-                        <div class = "col-4">
-                            <div class = "row g-0">
-                                <div class = "col"><h1 class = "highlight">(1+</h1></div>
-                                <div class = "col">
-                                    <div id = "r_star_eq" class = "CTATTextInput r_star"></div>
-                                </div>
-                                <div class = "col left_paren"><h1 class = "highlight">)</h1></div>
-                            </div>
-                        </div>
-                        <div class = "col-1">
-                            <div id = "t_star_eq" class = "CTATTextInput exponent"></div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <div class = "row"> 
-                        <div class = "col-1"></div>
-                        <div class = "col-1">
-                            <h1 class = "highlight">=</h1>
-                        </div>
-                        <div class = "col-1">
-                            <div id = "P_eq2" class = "CTATTextInput P"></div>
-                        </div>
-                        <div class = "col-4">
-                            <div class = "row g-0">
-                                <div class = "col"><h1 class = "highlight">(</h1></div>
-                                <div class = "col">
-                                    <div id = "r_star_added" class = "CTATTextInput r_star center"></div>
-                                </div>
-                                <div class = "col left_paren"><h1 class = "highlight">)</h1></div>
-                            </div>
-                        </div>
-                        <div class = "col">
-                            <div id="t_star_eq2" class = "CTATTextInput exponent"></div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <div class = "row"> 
-                        <div class = "col-1"></div>
-                        <div class = "col-1"><h1 class = "highlight">=</h1></div>
-                        <div class = "col-1">
-                            <div id = "P_eq3" class = "CTATTextInput P"></div>
-                        </div>
-                        <div class = "col-4">
-                            <div class = "row g-0">
-                                <div class = "col"><h1 class = "highlight">(</h1></div>
-                                <div class = "col">
-                                    <div id = "coef_eq3" class = "CTATTextInput r_star center"></div>
-                                </div>
-                                <div class = "col left_paren"><h1 class = "highlight">)</h1></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <div class = "row">
-                        <div class = "col-1">
-                            <div id="final_label" class = "CTATTextInput"></div>
-                        </div>
-                        <div class = "col-1">
-                            <h1 class = "highlight">=</h1>
-                        </div>
-                        <div class = "col-1">
-                            <div id="final_answer" class = "CTATTextInput P"></div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <div class = "row">
-                        <div class = "col">
-                            <div class = "dropdown_question">
-                                Was your estimate higher or lower than the answer?
-                            </div>
-                        </div>
-                        <div class = "col">
-                            <div id = "compare" class = "CTATComboBox" data-ctat-labels="---select---,higher,lower,NA"></div>
-                        </div>
-                    </div>
-
-                    <br>
-
-                    <div class = "row">
-                        <div class = "col">
-                            <div class = "dropdown_question">
-                                Did you under or overestimate the power of compounding?                    </div>
-                        </div>
-                        <div class = "col">
-                            <div id="power" class = "CTATComboBox" data-ctat-labels="---select---,underestimated,overestimated,NA"></div>
-                        </div>
-                    </div>
-
-                    <br><br>
-
-                    <div class = "CTATDoneButton" id = "done"></div>
-
-                <!-- #solution -->
+                    <div id="hint-window" class="CTATHintWindow"></div>
+                    <div id="hint-button" class="CTATHintButton"></div>
                 </div>
             </div>
         </div>
-        
-    </body>
+        <div id="solution_container" class="col-8">
+            <div id="solution">
+                <h2>Understanding the Problem</h2>
+
+                <div id="est_instructions" class="instructions">
+                    Estimate what the final answer will be. Do not use any calculations for this step. Your estimate will be accepted as correct as long at is given in a numeric form.
+                </div>
+                <div id="estimate" class="CTATTextInput"></div>
+                <br><br>
+                <div class="dropdown_question">Is this a forward (solving for future amount) or backwards (solving for present amount) problem?</div>
+                <div id="prob_types" class="CTATComboBox" data-ctat-labels="---select ---,forward,backwards"></div>
+
+                <br><br>
+                <div id="star_instructions" class="instructions">
+                    Entering r* and t* here is an intermediate step, and is optional. When entering r* and t*, your answer should be correct to two decimal places.
+
+                </div>
+                <br>
+                <div id="r_star_opt" class="star_opt row">
+                    <div class="col-2">
+                        <h1 class="highlight">r*= </h1>
+                    </div>
+                    <div class="col-2">
+                        <div id="r_star_calc" class="CTATTextInput star_opt_input"></div>
+
+                    </div>
+                </div>
+                <div id="t_star_opt" class="star_opt row">
+                    <div class="col-2">
+                        <h1 class="highlight">t*= </h1>
+                    </div>
+                    <div class="col-2">
+                        <div id="t_star_calc" class="CTATTextInput star_opt_input"></div>
+
+                    </div>
+                </div>
+                <br><br>
+                <div class="instructions">
+                    Write the formula in the sidebar below by substituting values from the problem. Leave the variable that you are trying to solve for in the formula (e.g. A or P). The first line and last lines are required, and the intermediate two simplification steps
+                    are optional. All numbers will be checked to two decimal places of accuracy.
+                </div>
+                <br><br>
+                <div class="row">
+                    <div class="col-1">
+                        <div id="A_eq" class="CTATTextInput"></div>
+                    </div>
+                    <div class="col-1">
+                        <h1 class="highlight">=</h1>
+                    </div>
+                    <div class="col-1">
+                        <div id="P_eq" class="CTATTextInput P"></div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row g-0">
+                            <div class="col">
+                                <h1 class="highlight">(1+</h1>
+                            </div>
+                            <div class="col">
+                                <div id="r_star_eq" class="CTATTextInput r_star"></div>
+                            </div>
+                            <div class="col left_paren">
+                                <h1 class="highlight">)</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <div id="t_star_eq" class="CTATTextInput exponent"></div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-1">
+                        <h1 class="highlight">=</h1>
+                    </div>
+                    <div class="col-1">
+                        <div id="P_eq2" class="CTATTextInput P"></div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row g-0">
+                            <div class="col">
+                                <h1 class="highlight">(</h1>
+                            </div>
+                            <div class="col">
+                                <div id="r_star_added" class="CTATTextInput r_star center"></div>
+                            </div>
+                            <div class="col left_paren">
+                                <h1 class="highlight">)</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div id="t_star_eq2" class="CTATTextInput exponent"></div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-1">
+                        <h1 class="highlight">=</h1>
+                    </div>
+                    <div class="col-1">
+                        <div id="P_eq3" class="CTATTextInput P"></div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row g-0">
+                            <div class="col">
+                                <h1 class="highlight">(</h1>
+                            </div>
+                            <div class="col">
+                                <div id="coef_eq3" class="CTATTextInput r_star center"></div>
+                            </div>
+                            <div class="col left_paren">
+                                <h1 class="highlight">)</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <div class="row">
+                    <div class="col-1">
+                        <div id="final_label" class="CTATTextInput"></div>
+                    </div>
+                    <div class="col-1">
+                        <h1 class="highlight">=</h1>
+                    </div>
+                    <div class="col-1">
+                        <div id="final_answer" class="CTATTextInput P"></div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="dropdown_question">
+                            Was your estimate higher or lower than the answer?
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div id="compare" class="CTATComboBox" data-ctat-labels="---select---,higher,lower,NA"></div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="dropdown_question">
+                            Did you under or overestimate the power of compounding? </div>
+                    </div>
+                    <div class="col">
+                        <div id="power" class="CTATComboBox" data-ctat-labels="---select---,underestimated,overestimated,NA"></div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <div class="CTATDoneButton" id="done"></div>
+
+                <!-- #solution -->
+            </div>
+        </div>
+    </div>
+
+</body>
+
 </html>
