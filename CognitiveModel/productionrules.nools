@@ -98,7 +98,7 @@ rule EnterEstimate {
 // 		sai: StudentValues sai.selection == sel {input: i};
 // 	}
 // 	then {
-// 		if(checkSAI({selection: sel, action: "UpdateTextField", }))
+// 		if(checkSAI({selection: sel, action: "UpdateTextField", input: i}))
 
 // 	}
 
