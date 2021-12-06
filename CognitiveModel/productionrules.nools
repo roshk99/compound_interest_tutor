@@ -71,6 +71,7 @@ rule EnterEstimate {
 	}
 	then {
 		assert(new Hint("Enter your best guess for the answer, any number greater than 0 will be considered a valid guess."));
+
 		let inputNum = parseInt(i, 10);
 
 		var predictedSAI = {selection: sel, action: "UpdateTextField", input: i};
@@ -90,6 +91,19 @@ rule EnterEstimate {
 	}
 }
 
+// rule estimate_buggy_num {
+// 	when {
+// 		p: Problem;
+// 		ie: InterfaceElement ie.name == "estimate" && !ie.value {name: sel};
+// 		sai: StudentValues sai.selection == sel {input: i};
+// 	}
+// 	then {
+// 		if(checkSAI({selection: sel, action: "UpdateTextField", }))
+
+// 	}
+
+// }
+
 rule ProbTypes {
 	when {
 		prob : Problem {direction: direction};
@@ -98,7 +112,9 @@ rule ProbTypes {
 	}
 	then {
 		assert(new Hint("What value are you given, the present amount or future amount?."));
-		assert(new Hint("Enter "+direction+"in the dropdown."));
+		assert(new Hint("If you are given a present amount, you are solving for a future amount. 
+		If you are given a future amount, you are solving for a present amount."));
+		assert(new Hint("Select "+direction+" in the highlighted dropdown."));
 		if (checkSAI({selection: ie.name, action: "UpdateComboBox", input: direction})) {
 			modify(ie, "value", direction);
 			halt();
@@ -234,8 +250,23 @@ rule Equation1 {
 		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
 	}
 	then {
+
 		var index = ie_names.indexOf(ie.name);
 		var ans = ie_values[index];
+
+		if (index == 0) {
+			assert(new Hint("A hint"));
+		}
+		if (index == 1) {
+			assert(new Hint("P hint"));
+		}
+		if (index == 2) {
+			assert(new Hint("r hint"));
+		}
+		if (index == 3) {
+			assert(new Hint("t hint"));
+		}
+
 
 		if ((direction == "forward" && index == 0) || (direction == "backward" && index == 1) ) {
 			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
