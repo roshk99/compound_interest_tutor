@@ -58,6 +58,20 @@ global skill_definitions = [
 		label: "Simplification"
 	},
 	{
+		ruleName: "Equation4_direct",
+		skillName: "Simplification",
+		category: "6.28",
+		opportunities: 11,
+		label: "Simplification"
+	},
+		{
+		ruleName: "Equation4_intermediate",
+		skillName: "Simplification",
+		category: "6.28",
+		opportunities: 11,
+		label: "Simplification"
+	},
+	{
 		ruleName: "Compare",
 		skillName: "Reflection",
 		category: "6.28",

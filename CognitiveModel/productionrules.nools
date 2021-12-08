@@ -167,6 +167,31 @@ rule R_Star_Buggy {
 	}
 }
 
+rule R_Star_Buggy2 {
+	when {
+		prob : Problem {n:n, r:r};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		r_star: InterfaceElement r_star.name == "r_star_calc" && !r_star.value;
+	}
+	then {
+		var r_star_ans = r/n*100;
+		if (!Number.isInteger(r_star_ans)) { 
+			r_star_ans = r_star_ans.toFixed(2); 
+		}
+		if (checkSAI({selection: r_star.name, action: "UpdateTextField", input: r_star_ans},
+					  function(stuSAI, sysSAI) {
+						var ret = (( stuSAI.selection ===  sysSAI.selection  )
+								&& ( stuSAI.action ===  sysSAI.action )
+								&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+							 			sysSAI.input));
+						return ret; }, true)) {
+      		setSuccessOrBugMsg("Remember a rate is a ratio between two quantities. Enter the answer a decimal.");
+      		backtrack();
+    	}			
+	}
+}
+
 rule T_Star {
 	when {
 		prob : Problem {n:n, t:t};
@@ -242,16 +267,16 @@ rule Equation1 {
 		var ans = ie_values[index];
 
 		if (index == 0) {
-			assert(new Hint("A hint"));
+			assert(new Hint("Enter the final amount from the problem or A if you are solving for the final amount."));
 		}
 		if (index == 1) {
-			assert(new Hint("P hint"));
+			assert(new Hint("Enter the initial amount from the problem or P if you are solving for the initial amount."));
 		}
 		if (index == 2) {
-			assert(new Hint("r hint"));
+			assert(new Hint("Enter the effective interest rate. Go to the intermediate calculation step r* if you want help computing it."));
 		}
 		if (index == 3) {
-			assert(new Hint("t hint"));
+			assert(new Hint("Enter the total compounding periods. Go to the intermediate calculation step t* if you want help computing it."));
 		}
 
 
@@ -409,12 +434,21 @@ rule Equation4 {
 		);
 		ierow: InterfaceRow ierow.name == "eq_4" {ie_names: ie_names, ie_values: ie_values};
 		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+		b: Boolean b === true from false;
 	}
 	then {
 		var index = ie_names.indexOf(ie.name);
 		var ans = ie_values[index];
-		console.log(index);
-		console.log(ans);
+		
+		if (index == 0) {
+			assert(new Hint("Enter the variable you are solving for (A or P)."));
+		}
+		if (index == 1) {
+			assert(new Hint("Make sure you use unrounded values when calculating your final answer. Complete the two optional rows above if you want to check intermediate calculations."));
+			assert(new Hint("Enter " + ans + "."))
+		}
+
+
 		if ((index == 0) ) {
 			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
 				modify(ie, "value", ans);
@@ -449,6 +483,149 @@ rule Equation4 {
 	}
 
 }
+
+rule Equation4_direct {
+	when {
+		prob : Problem {direction: direction};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow3: InterfaceRow ierow3.name == "eq_3" {ie_names: ie3_names};
+		not(
+			ie3: InterfaceElement ie3_names.includes(ie3.name) && ie3.value
+		);
+		ierow: InterfaceRow ierow.name == "eq_4" {ie_names: ie_names, ie_values: ie_values};
+		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+		// b: Boolean b === true from false;
+	}
+	then {
+		var index = ie_names.indexOf(ie.name);
+		var ans = ie_values[index];
+		
+		if (index == 0) {
+			assert(new Hint("Enter the variable you are solving for (A or P)."));
+		}
+		if (index == 1) {
+			assert(new Hint("Make sure you use unrounded values when calculating your final answer. Complete the two optional rows above if you want to check intermediate calculations."));
+			assert(new Hint("Enter " + ans + "."))
+		}
+
+
+		if ((index == 0) ) {
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+		}
+		else {
+			if (!Number.isInteger(ans)) { 
+				ans = ans.toFixed(2); 
+			}
+
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans},
+						function(stuSAI, sysSAI) {
+							var ret = (( stuSAI.selection ===  sysSAI.selection  )
+									&& ( stuSAI.action ===  sysSAI.action )
+									&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+											sysSAI.input));
+							return ret; })) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+
+		}
+		
+			
+	}
+
+}
+
+rule Equation4_intermediate {
+	when {
+		prob : Problem {direction: direction, P: P, A: A};
+		estimate_ie: InterfaceElement estimate_ie.name == "estimate" && estimate_ie.value;
+		prob_types_ie: InterfaceElement prob_types_ie.name == "prob_types" && prob_types_ie.value;
+		ierow1: InterfaceRow ierow1.name == "eq_1" {ie_names: ie1_names};
+		not(
+			ie1: InterfaceElement ie1_names.includes(ie1.name) && !ie1.value
+		);
+		ierow3: InterfaceRow ierow3.name == "eq_3" {ie_names: ie3_names};
+		not(
+			ie3: InterfaceElement ie3_names.includes(ie3.name) && !ie3.value
+		);
+		coeff_ie: InterfaceElement coeff_ie.name == "coef_eq3" {value: coeff};
+
+		ierow: InterfaceRow ierow.name == "eq_4" {ie_names: ie_names, ie_values: ie_values};
+		ie: InterfaceElement ie_names.includes(ie.name) && !ie.value;
+		// b: Boolean b === true from false;
+	}
+	then {
+		var index = ie_names.indexOf(ie.name);
+		var ans = ie_values[index];
+
+		if (index == 1) {
+			coeff = parseFloat(coeff);
+			console.log(coeff);
+			if (direction == "forward") {
+				ans = coeff.toFixed(2)*P;
+			}
+			else {
+				ans = A / coeff.toFixed(2);
+			}
+		}
+		if (index == 0) {
+			assert(new Hint("Enter the variable you are solving for (A or P)."));
+		}
+		if (index == 1) {
+			assert(new Hint("Make sure you use unrounded values when calculating your final answer. Complete the two optional rows above if you want to check intermediate calculations."));
+			assert(new Hint("Enter " + ans + "."))
+		}
+
+
+		if ((index == 0) ) {
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans})) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+		}
+		else {
+			if (!Number.isInteger(ans)) { 
+				ans = ans.toFixed(2); 
+			}
+
+			if (checkSAI({selection: ie.name, action: "UpdateTextField", input: ans},
+						function(stuSAI, sysSAI) {
+							var ret = (( stuSAI.selection ===  sysSAI.selection  )
+									&& ( stuSAI.action ===  sysSAI.action )
+									&& ((parseFloat(stuSAI.input, 10).toFixed(2)) == 
+											sysSAI.input));
+							return ret; })) {
+				modify(ie, "value", ans);
+				halt();
+			}
+			else {
+				backtrack();
+			}
+
+		}
+		
+			
+	}
+
+}
+
 
 rule Compare {
 	when {
